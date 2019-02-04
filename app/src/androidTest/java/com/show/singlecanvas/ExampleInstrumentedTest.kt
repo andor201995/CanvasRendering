@@ -1,4 +1,4 @@
-package com.show.singlecanvasrendering
+package com.show.singlecanvas
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.show.singlecanvasrendering", appContext.packageName)
+        assertEquals("com.show.singlecanvas", appContext.packageName)
     }
 }
