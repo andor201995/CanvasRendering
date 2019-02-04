@@ -1,4 +1,4 @@
-package com.show.singlecanvasrendering
+package com.show.singlecanvas
 
 import org.junit.Test
 
