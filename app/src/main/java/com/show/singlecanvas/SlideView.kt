@@ -7,7 +7,6 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.View
 import android.widget.FrameLayout
 import java.util.*
 import kotlin.collections.ArrayList
@@ -27,12 +26,11 @@ class SlideView : FrameLayout, ITalkToSlideView {
     private val slidePaint = Paint()
     private val pathRegion = Region()
     private val pathBoundRect = RectF()
-    private val numberOfShapes = 10000
+    private val numberOfShapes = 100000
     private var initX: Float = 0.0f
     private var initY: Float = 0.0f
     private val selectedShapeList = ArrayList<Int>()
-    private var bBoxView: BBoxView? = null
-    private var shapeView: ShapeView? = null
+    private var shapeSurfaceView: ShapeSurfaceView? = null
 
 
     private val drawableList = HashMap<ViewType, TreeMap<Int, DrawableView>>()
@@ -48,14 +46,11 @@ class SlideView : FrameLayout, ITalkToSlideView {
         post {
             slideLeftTop = floatArrayOf((width - slideWidth) / 2, (height - slideHeight) / 2)
             invalidate()
-            bBoxView = BBoxView(context, this)
-            shapeView = ShapeView(context, this)
+            shapeSurfaceView = ShapeSurfaceView(context, this)
             val lp =
                 FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
-            bBoxView!!.layoutParams = lp
-            shapeView!!.layoutParams = lp
-            addView(shapeView)
-            addView(bBoxView)
+            shapeSurfaceView!!.layoutParams = lp
+            addView(shapeSurfaceView)
         }
     }
 
@@ -166,36 +161,8 @@ class SlideView : FrameLayout, ITalkToSlideView {
         //Draw Slide
         canvas.drawRect(0f, 0f, slideWidth, slideHeight, slidePaint)
 
-//        drawShape(canvas, drawableList[ViewType.Shape]!!)
-//        drawBBox(canvas, drawableList[ViewType.ShapeBBox]!!)
-
         canvas.restore()
     }
-
-   /* private fun drawBBox(canvas: Canvas, treeMap: TreeMap<Int, DrawableView>) {
-        if (selectedShapeList.size > 0) {
-            selectedShapeList.forEach {
-                val drawableView = treeMap[it]
-                if (drawableView is DrawableView.ShapeBBoxObject) {
-                    canvas.save()
-                    canvas.translate(drawableView.left, drawableView.top)
-                    canvas.drawPath(drawableView.path, drawableView.paint)
-                    canvas.restore()
-                }
-            }
-        }
-    }
-
-    private fun drawShape(canvas: Canvas, treeMap: TreeMap<Int, DrawableView>) {
-        treeMap.forEach { (_, shapeDrawableView) ->
-            if (shapeDrawableView is DrawableView.ShapeObject) {
-                canvas.save()
-                canvas.translate(shapeDrawableView.left, shapeDrawableView.top)
-                canvas.drawPath(shapeDrawableView.path, shapeDrawableView.paint)
-                canvas.restore()
-            }
-        }
-    }*/
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
@@ -207,7 +174,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 val shapeIndex = getShapeIndex(initX, initY, drawableList[ViewType.ShapeRev]!!)
                 if (shapeIndex != -1) {
                     selectedShapeList.add(shapeIndex)
-                    bBoxView!!.postInvalidate()
+                    shapeSurfaceView!!.drawOnCanvas()
                 }
 
             }
@@ -239,8 +206,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 }
             }
             selectedShapeList.clear()
-            shapeView!!.drawOnCanvas()
-            bBoxView!!.postInvalidate()
+            shapeSurfaceView!!.drawOnCanvas()
         }
     }
 
@@ -253,7 +219,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                     drawableView.top += diffY
                 }
             }
-            bBoxView!!.postInvalidate()
+            shapeSurfaceView!!.drawOnCanvas()
         }
     }
 
@@ -300,32 +266,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
     }
 }
 
-class BBoxView(context: Context, private val iTalkToSlideView: ITalkToSlideView) : View(context) {
-
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
-        drawBBox(canvas!!, iTalkToSlideView.getBBoxMap())
-    }
-
-    private fun drawBBox(canvas: Canvas, treeMap: TreeMap<Int, DrawableView>) {
-        if (iTalkToSlideView.getSelectedShapeList().size > 0) {
-            iTalkToSlideView.getSelectedShapeList().forEach {
-                val drawableView = treeMap[it]
-                if (drawableView is DrawableView.ShapeBBoxObject) {
-                    canvas.save()
-                    canvas.translate(
-                        drawableView.left + iTalkToSlideView.getSlideLeftTop()[0],
-                        drawableView.top + iTalkToSlideView.getSlideLeftTop()[1]
-                    )
-                    canvas.drawPath(drawableView.path, drawableView.paint)
-                    canvas.restore()
-                }
-            }
-        }
-    }
-}
-
-class ShapeView(context: Context, private val iTalkToSlideView: ITalkToSlideView) : SurfaceView(context),
+class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSlideView) : SurfaceView(context),
     SurfaceHolder.Callback {
 
     private var screenWidth = 0
@@ -366,6 +307,7 @@ class ShapeView(context: Context, private val iTalkToSlideView: ITalkToSlideView
 
             drawShape(canvas, iTalkToSlideView.getShapeMap())
 
+            drawBBox(canvas, iTalkToSlideView.getBBoxMap())
 
             holder.unlockCanvasAndPost(canvas)
         }
@@ -381,6 +323,23 @@ class ShapeView(context: Context, private val iTalkToSlideView: ITalkToSlideView
                 )
                 canvas.drawPath(shapeDrawableView.path, shapeDrawableView.paint)
                 canvas.restore()
+            }
+        }
+    }
+
+    private fun drawBBox(canvas: Canvas, treeMap: TreeMap<Int, DrawableView>) {
+        if (iTalkToSlideView.getSelectedShapeList().size > 0) {
+            iTalkToSlideView.getSelectedShapeList().forEach {
+                val drawableView = treeMap[it]
+                if (drawableView is DrawableView.ShapeBBoxObject) {
+                    canvas.save()
+                    canvas.translate(
+                        drawableView.left + iTalkToSlideView.getSlideLeftTop()[0],
+                        drawableView.top + iTalkToSlideView.getSlideLeftTop()[1]
+                    )
+                    canvas.drawPath(drawableView.path, drawableView.paint)
+                    canvas.restore()
+                }
             }
         }
     }
