@@ -328,11 +328,6 @@ class BBoxView(context: Context, private val iTalkToSlideView: ITalkToSlideView)
 class ShapeView(context: Context, private val iTalkToSlideView: ITalkToSlideView) : SurfaceView(context),
     SurfaceHolder.Callback {
 
-    private var thread: Thread? = null
-
-    // Record whether the child thread is running or not.
-    private var threadRunning = false
-
     private var screenWidth = 0
 
     private var screenHeight = 0
@@ -341,7 +336,6 @@ class ShapeView(context: Context, private val iTalkToSlideView: ITalkToSlideView
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        threadRunning = false
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
