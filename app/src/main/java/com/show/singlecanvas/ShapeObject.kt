@@ -23,3 +23,9 @@ sealed class DrawableView {
     }
 }
 
+sealed class ViewType {
+    object Shape : ViewType()
+    object ShapeBBox : ViewType()
+    object ShapeRev : ViewType()
+}
+
