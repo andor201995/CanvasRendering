@@ -172,7 +172,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
         canvas.restore()
     }
 
-    private fun drawBBox(canvas: Canvas, treeMap: TreeMap<Int, DrawableView>) {
+   /* private fun drawBBox(canvas: Canvas, treeMap: TreeMap<Int, DrawableView>) {
         if (selectedShapeList.size > 0) {
             selectedShapeList.forEach {
                 val drawableView = treeMap[it]
@@ -195,7 +195,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 canvas.restore()
             }
         }
-    }
+    }*/
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
@@ -204,31 +204,24 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 initX = event.x
                 initY = event.y
 
-//                Runnable {
                 val shapeIndex = getShapeIndex(initX, initY, drawableList[ViewType.ShapeRev]!!)
                 if (shapeIndex != -1) {
                     selectedShapeList.add(shapeIndex)
                     bBoxView!!.postInvalidate()
                 }
-//                }.run()
-
 
             }
             MotionEvent.ACTION_MOVE -> {
                 val diffX = event.x - initX
                 val diffY = event.y - initY
-//                Runnable {
                 moveSelectedBBox(diffX, diffY, drawableList[ViewType.ShapeBBox]!!)
-//                }.run()
 
                 initX = event.x
                 initY = event.y
             }
             MotionEvent.ACTION_UP -> {
 
-//                Runnable {
                 moveSelectedShape(drawableList[ViewType.Shape]!!, drawableList[ViewType.ShapeBBox]!!)
-//                }.run()
             }
 
         }
@@ -246,7 +239,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 }
             }
             selectedShapeList.clear()
-//            shapeView!!.postInvalidate()
+            shapeView!!.drawOnCanvas()
             bBoxView!!.postInvalidate()
         }
     }
@@ -333,7 +326,7 @@ class BBoxView(context: Context, private val iTalkToSlideView: ITalkToSlideView)
 }
 
 class ShapeView(context: Context, private val iTalkToSlideView: ITalkToSlideView) : SurfaceView(context),
-    SurfaceHolder.Callback, Runnable {
+    SurfaceHolder.Callback {
 
     private var thread: Thread? = null
 
@@ -344,12 +337,6 @@ class ShapeView(context: Context, private val iTalkToSlideView: ITalkToSlideView
 
     private var screenHeight = 0
 
-    override fun run() {
-        while (threadRunning) {
-            drawOnCanvas()
-        }
-    }
-
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
     }
 
@@ -358,22 +345,16 @@ class ShapeView(context: Context, private val iTalkToSlideView: ITalkToSlideView
     }
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        // Create the child thread when SurfaceView is created.
-        thread = Thread(this)
-        // Start to run the child thread.
-        thread!!.start()
-        // Set thread running flag to true.
-        threadRunning = true
-        // Get screen width and height.
         screenHeight = height
         screenWidth = width
+        drawOnCanvas()
     }
 
     init {
         holder.addCallback(this)
     }
 
-    private fun drawOnCanvas() {
+    fun drawOnCanvas() {
         val canvas: Canvas? = holder.lockCanvas()
         if (canvas != null) {
             val margin = 0
