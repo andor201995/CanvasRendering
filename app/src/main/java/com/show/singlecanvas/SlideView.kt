@@ -26,7 +26,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
     private val slidePaint = Paint()
     private val pathRegion = Region()
     private val pathBoundRect = RectF()
-    private val numberOfShapes = 100000
+    private val numberOfShapes = 10000
     private var initX: Float = 0.0f
     private var initY: Float = 0.0f
     private val selectedShapeList = ArrayList<Int>()
@@ -174,7 +174,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 val shapeIndex = getShapeIndex(initX, initY, drawableList[ViewType.ShapeRev]!!)
                 if (shapeIndex != -1) {
                     selectedShapeList.add(shapeIndex)
-                    shapeSurfaceView!!.drawOnCanvas()
+//                    shapeSurfaceView!!.drawOnCanvas()
                 }
 
             }
@@ -206,7 +206,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 }
             }
             selectedShapeList.clear()
-            shapeSurfaceView!!.drawOnCanvas()
+//            shapeSurfaceView!!.drawOnCanvas()
         }
     }
 
@@ -219,7 +219,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                     drawableView.top += diffY
                 }
             }
-            shapeSurfaceView!!.drawOnCanvas()
+//            shapeSurfaceView!!.drawOnCanvas()
         }
     }
 
@@ -264,32 +264,112 @@ class SlideView : FrameLayout, ITalkToSlideView {
     override fun getShapeMap(): TreeMap<Int, DrawableView> {
         return drawableList[ViewType.Shape]!!
     }
+
+    fun startSurfaceDrawThread() {
+        shapeSurfaceView?.startDrawThread()
+    }
+
+    fun stopSurfaceDrawThread() {
+        shapeSurfaceView?.stopDrawThread()
+    }
 }
 
 class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSlideView) : SurfaceView(context),
-    SurfaceHolder.Callback {
+    SurfaceHolder.Callback, Runnable {
+
+
+    private var drawThread: Thread? = null
+
+    private var drawingActive: Boolean = false
 
     private var screenWidth = 0
 
     private var screenHeight = 0
 
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-    }
+    private var surfaceHolder: SurfaceHolder? = null
 
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        screenHeight = height
-        screenWidth = width
-        drawOnCanvas()
-    }
+    private var surfaceReady: Boolean = false
 
     init {
         holder.addCallback(this)
     }
 
-    fun drawOnCanvas() {
+
+    override fun run() {
+        while (drawingActive) {
+            if (surfaceHolder == null) {
+                return
+            }
+            drawOnCanvas()
+        }
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+    }
+
+    override fun surfaceDestroyed(holder: SurfaceHolder?) {
+        // Surface is not used anymore - stop the drawing thread
+        stopDrawThread()
+        // and release the surface
+        surfaceHolder!!.surface.release()
+
+        this.surfaceHolder = null
+        surfaceReady = false
+    }
+
+    fun stopDrawThread() {
+        if (drawThread == null) {
+            return
+        }
+        drawingActive = false
+        while (true) {
+            try {
+                drawThread!!.join(5000)
+                break
+            } catch (e: Exception) {
+            }
+
+        }
+        drawThread = null
+    }
+
+
+    override fun surfaceCreated(holder: SurfaceHolder?) {
+        surfaceHolder = holder
+
+        if (drawThread != null) {
+            drawingActive = false
+            try {
+                drawThread!!.join()
+            } catch (e: InterruptedException) {
+                // do nothing
+            }
+
+        }
+
+        surfaceReady = true
+
+        startDrawThread()
+
+        screenHeight = height
+        screenWidth = width
+
+//        drawOnCanvas()
+
+    }
+
+    fun startDrawThread() {
+        if (surfaceReady && drawThread == null) {
+            // Create the child drawThread when SurfaceView is created.
+            drawThread = Thread(this)
+            // Start to run the child drawThread.
+            drawThread!!.start()
+            // Set drawThread running flag to true.
+            drawingActive = true
+        }
+    }
+
+    private fun drawOnCanvas() {
         val canvas: Canvas? = holder.lockCanvas()
         if (canvas != null) {
             val margin = 0
@@ -300,7 +380,7 @@ class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSl
 
             val rect = Rect(margin, margin, right, bottom)
 
-            // Draw the specify canvas background color.
+            // Draw the specify canvas background color. Clear the old canvas
             val backgroundPaint = Paint()
             backgroundPaint.color = Color.WHITE
             canvas.drawRect(rect, backgroundPaint)
