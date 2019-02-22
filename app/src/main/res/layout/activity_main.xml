@@ -6,7 +6,7 @@
     android:id="@+id/mainActivity"
     tools:context=".MainActivity">
 
-    <com.show.singlecanvas.SlideView
+    <com.show.singlecanvas.customview.SlideView
         android:id="@+id/slideView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

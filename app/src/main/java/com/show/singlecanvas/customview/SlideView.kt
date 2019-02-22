@@ -1,13 +1,14 @@
-package com.show.singlecanvas
+package com.show.singlecanvas.customview
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
-import android.view.SurfaceHolder
-import android.view.SurfaceView
 import android.widget.FrameLayout
+import com.show.singlecanvas.DrawableView
+import com.show.singlecanvas.ViewType
+import com.show.singlecanvas.talker.ITalkToSlideView
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -177,7 +178,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
                     selectedShapeList.add(shapeIndex)
                     val drawableView = drawableList[ViewType.Shape]!![shapeIndex]
                     if (drawableView is DrawableView.ShapeObject) {
-                        val margin = 100
+                        val margin = 20
                         val viewBounds = RectF()
                         drawableView.path.computeBounds(viewBounds, true)
                         val dirtyRect: Rect = Rect()
@@ -230,7 +231,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
             selectedShapeList.forEach {
                 val drawableView = treeMap[it]
                 if (drawableView is DrawableView.ShapeBBoxObject) {
-                    val margin = 100
+                    val margin = 20
                     val viewBounds = RectF()
                     drawableView.path.computeBounds(viewBounds, true)
                     val tempRect = Rect()
@@ -305,167 +306,4 @@ class SlideView : FrameLayout, ITalkToSlideView {
     fun stopSurfaceDrawThread() {
         shapeSurfaceView?.stopDrawThread()
     }
-}
-
-class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSlideView) : SurfaceView(context),
-    SurfaceHolder.Callback, Runnable {
-
-
-    private var drawThread: Thread? = null
-
-    private var drawingActive: Boolean = false
-
-    private var screenWidth = 0
-
-    private var screenHeight = 0
-
-    private var surfaceHolder: SurfaceHolder? = null
-
-    private var surfaceReady: Boolean = false
-
-    init {
-        holder.addCallback(this)
-    }
-
-
-    override fun run() {
-        while (drawingActive) {
-            if (surfaceHolder == null) {
-                return
-            } else if (!surfaceHolder!!.surface.isValid) {
-                continue
-            } else {
-                drawOnCanvas()
-            }
-        }
-    }
-
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        // Surface is not used anymore - stop the drawing thread
-        stopDrawThread()
-        // and release the surface
-        surfaceHolder!!.surface.release()
-
-        this.surfaceHolder = null
-        surfaceReady = false
-    }
-
-    fun stopDrawThread() {
-        if (drawThread == null) {
-            return
-        }
-        drawingActive = false
-        while (true) {
-            try {
-                drawThread!!.join(5000)
-                break
-            } catch (e: Exception) {
-            }
-
-        }
-        drawThread = null
-    }
-
-
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        surfaceHolder = holder
-
-        if (drawThread != null) {
-            drawingActive = false
-            try {
-                drawThread!!.join()
-            } catch (e: InterruptedException) {
-                // do nothing
-            }
-
-        }
-
-        surfaceReady = true
-
-//        startDrawThread()
-
-        screenHeight = height
-        screenWidth = width
-
-        drawOnCanvas()
-
-    }
-
-    fun startDrawThread() {
-        if (surfaceReady && drawThread == null) {
-            // Create the child drawThread when SurfaceView is created.
-            drawThread = Thread(this)
-            // Start to run the child drawThread.
-            drawThread!!.start()
-            // Set drawThread running flag to true.
-            drawingActive = true
-        }
-    }
-
-    fun drawOnCanvas(dirtyRect: Rect = Rect(0, 0, right, bottom)) {
-        val canvas: Canvas? = holder.lockCanvas(dirtyRect)
-        if (canvas != null) {
-            val margin = 0
-
-            val right = screenWidth - margin
-
-            val bottom = screenHeight - margin
-
-            val rect = Rect(margin, margin, right, bottom)
-
-            // Draw the specify canvas background color. Clear the old canvas
-            val backgroundPaint = Paint()
-            backgroundPaint.color = Color.WHITE
-            canvas.drawRect(rect, backgroundPaint)
-
-            drawShape(canvas, iTalkToSlideView.getShapeMap())
-
-            drawBBox(canvas, iTalkToSlideView.getBBoxMap())
-
-            holder.unlockCanvasAndPost(canvas)
-        }
-    }
-
-    private fun drawShape(canvas: Canvas, treeMap: TreeMap<Int, DrawableView>) {
-        treeMap.forEach { (_, shapeDrawableView) ->
-            if (shapeDrawableView is DrawableView.ShapeObject) {
-                canvas.save()
-                canvas.translate(
-                    shapeDrawableView.left + iTalkToSlideView.getSlideLeftTop()[0],
-                    shapeDrawableView.top + iTalkToSlideView.getSlideLeftTop()[1]
-                )
-                canvas.drawPath(shapeDrawableView.path, shapeDrawableView.paint)
-                canvas.restore()
-            }
-        }
-    }
-
-    private fun drawBBox(canvas: Canvas, treeMap: TreeMap<Int, DrawableView>) {
-        if (iTalkToSlideView.getSelectedShapeList().size > 0) {
-            iTalkToSlideView.getSelectedShapeList().forEach {
-                val drawableView = treeMap[it]
-                if (drawableView is DrawableView.ShapeBBoxObject) {
-                    canvas.save()
-                    canvas.translate(
-                        drawableView.left + iTalkToSlideView.getSlideLeftTop()[0],
-                        drawableView.top + iTalkToSlideView.getSlideLeftTop()[1]
-                    )
-                    canvas.drawPath(drawableView.path, drawableView.paint)
-                    canvas.restore()
-                }
-            }
-        }
-    }
-
-
-}
-
-interface ITalkToSlideView {
-    fun getBBoxMap(): TreeMap<Int, DrawableView>
-    fun getSelectedShapeList(): ArrayList<Int>
-    fun getSlideLeftTop(): FloatArray
-    fun getShapeMap(): TreeMap<Int, DrawableView>
 }
