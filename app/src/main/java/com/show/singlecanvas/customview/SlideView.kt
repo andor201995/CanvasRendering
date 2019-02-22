@@ -27,7 +27,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
     private val slidePaint = Paint()
     private val pathRegion = Region()
     private val pathBoundRect = RectF()
-    private val numberOfShapes = 10000
+    private val numberOfShapes = 1000
     private var initX: Float = 0.0f
     private var initY: Float = 0.0f
     private val selectedShapeList = ArrayList<Int>()
