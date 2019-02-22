@@ -175,7 +175,20 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 val shapeIndex = getShapeIndex(initX, initY, drawableList[ViewType.ShapeRev]!!)
                 if (shapeIndex != -1) {
                     selectedShapeList.add(shapeIndex)
-//                    shapeSurfaceView!!.drawOnCanvas()
+                    val drawableView = drawableList[ViewType.Shape]!![shapeIndex]
+                    if (drawableView is DrawableView.ShapeObject) {
+                        val margin = 100
+                        val viewBounds = RectF()
+                        drawableView.path.computeBounds(viewBounds, true)
+                        val dirtyRect: Rect = Rect()
+                        dirtyRect.set(
+                            (-margin + slideLeftTop[0] + drawableView.left).toInt(),
+                            (-margin + slideLeftTop[1] + drawableView.top).toInt(),
+                            (margin + slideLeftTop[0] + drawableView.left + viewBounds.width()).toInt(),
+                            (margin + slideLeftTop[1] + drawableView.top + viewBounds.height()).toInt()
+                        )
+                        shapeSurfaceView!!.drawOnCanvas(dirtyRect)
+                    }
                 }
 
             }
@@ -207,20 +220,39 @@ class SlideView : FrameLayout, ITalkToSlideView {
                 }
             }
             selectedShapeList.clear()
-//            shapeSurfaceView!!.drawOnCanvas()
+            shapeSurfaceView!!.drawOnCanvas()
         }
     }
 
     private fun moveSelectedBBox(diffX: Float, diffY: Float, treeMap: TreeMap<Int, DrawableView>) {
         if (selectedShapeList.size > 0) {
+            val dirtyRect = Rect()
             selectedShapeList.forEach {
                 val drawableView = treeMap[it]
                 if (drawableView is DrawableView.ShapeBBoxObject) {
+                    val margin = 100
+                    val viewBounds = RectF()
+                    drawableView.path.computeBounds(viewBounds, true)
+                    val tempRect = Rect()
+                    tempRect.set(
+                        (-margin + slideLeftTop[0] + drawableView.left).toInt(),
+                        (-margin + slideLeftTop[1] + drawableView.top).toInt(),
+                        (margin + slideLeftTop[0] + drawableView.left + viewBounds.width()).toInt(),
+                        (margin + slideLeftTop[1] + drawableView.top + viewBounds.height()).toInt()
+                    )
+                    dirtyRect.union(tempRect)
                     drawableView.left += diffX
                     drawableView.top += diffY
+                    tempRect.set(
+                        (-margin + slideLeftTop[0] + drawableView.left).toInt(),
+                        (-margin + slideLeftTop[1] + drawableView.top).toInt(),
+                        (margin + slideLeftTop[0] + drawableView.left + viewBounds.width()).toInt(),
+                        (margin + slideLeftTop[1] + drawableView.top + viewBounds.height()).toInt()
+                    )
+                    dirtyRect.union(tempRect)
                 }
             }
-//            shapeSurfaceView!!.drawOnCanvas()
+            shapeSurfaceView!!.drawOnCanvas(dirtyRect)
         }
     }
 
@@ -353,12 +385,12 @@ class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSl
 
         surfaceReady = true
 
-        startDrawThread()
+//        startDrawThread()
 
         screenHeight = height
         screenWidth = width
 
-//        drawOnCanvas()
+        drawOnCanvas()
 
     }
 
@@ -373,8 +405,8 @@ class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSl
         }
     }
 
-    private fun drawOnCanvas() {
-        val canvas: Canvas? = holder.lockCanvas()
+    fun drawOnCanvas(dirtyRect: Rect = Rect(0, 0, right, bottom)) {
+        val canvas: Canvas? = holder.lockCanvas(dirtyRect)
         if (canvas != null) {
             val margin = 0
 
