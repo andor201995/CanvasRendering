@@ -166,6 +166,7 @@ class SlideView : FrameLayout, ITalkToSlideView {
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
+
         when (event!!.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 initX = event.x
@@ -299,8 +300,11 @@ class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSl
         while (drawingActive) {
             if (surfaceHolder == null) {
                 return
+            } else if (!surfaceHolder!!.surface.isValid) {
+                continue
+            } else {
+                drawOnCanvas()
             }
-            drawOnCanvas()
         }
     }
 
