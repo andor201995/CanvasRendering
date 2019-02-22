@@ -1,6 +1,6 @@
 package com.show.singlecanvas.talker
 
-import com.show.singlecanvas.DrawableView
+import com.show.singlecanvas.model.DrawableView
 import java.util.*
 
 interface ITalkToSlideView {

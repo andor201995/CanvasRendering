@@ -6,8 +6,8 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.widget.FrameLayout
-import com.show.singlecanvas.DrawableView
-import com.show.singlecanvas.ViewType
+import com.show.singlecanvas.model.DrawableView
+import com.show.singlecanvas.model.ViewType
 import com.show.singlecanvas.talker.ITalkToSlideView
 import java.util.*
 import kotlin.collections.ArrayList

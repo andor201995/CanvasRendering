@@ -1,4 +1,4 @@
-package com.show.singlecanvas
+package com.show.singlecanvas.model
 
 import android.graphics.Paint
 import android.graphics.Path

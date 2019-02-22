@@ -7,7 +7,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import com.show.singlecanvas.DrawableView
+import com.show.singlecanvas.model.DrawableView
 import com.show.singlecanvas.talker.ITalkToSlideView
 import java.util.*
 
