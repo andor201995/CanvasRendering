@@ -1,4 +1,4 @@
-package com.show.singlecanvas.customview
+package com.show.singlecanvas.customview.shapeView
 
 import android.content.Context
 import android.graphics.Canvas
@@ -12,12 +12,8 @@ import com.show.singlecanvas.talker.ITalkToSlideView
 import java.util.*
 
 class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSlideView) : SurfaceView(context),
-    SurfaceHolder.Callback, Runnable {
+    SurfaceHolder.Callback {
 
-
-    private var drawThread: Thread? = null
-
-    private var drawingActive: Boolean = false
 
     private var screenWidth = 0
 
@@ -25,88 +21,26 @@ class ShapeSurfaceView(context: Context, private val iTalkToSlideView: ITalkToSl
 
     private var surfaceHolder: SurfaceHolder? = null
 
-    private var surfaceReady: Boolean = false
-
     init {
         holder.addCallback(this)
     }
 
 
-    override fun run() {
-        while (drawingActive) {
-            if (surfaceHolder == null) {
-                return
-            } else if (!surfaceHolder!!.surface.isValid) {
-                continue
-            } else {
-                drawOnCanvas()
-            }
-        }
-    }
-
     override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder?) {
-        // Surface is not used anymore - stop the drawing thread
-        stopDrawThread()
         // and release the surface
-        surfaceHolder!!.surface.release()
-
+        surfaceHolder?.surface?.release()
         this.surfaceHolder = null
-        surfaceReady = false
-    }
-
-    fun stopDrawThread() {
-        if (drawThread == null) {
-            return
-        }
-        drawingActive = false
-        while (true) {
-            try {
-                drawThread!!.join(5000)
-                break
-            } catch (e: Exception) {
-            }
-
-        }
-        drawThread = null
     }
 
 
     override fun surfaceCreated(holder: SurfaceHolder?) {
-        surfaceHolder = holder
-
-        if (drawThread != null) {
-            drawingActive = false
-            try {
-                drawThread!!.join()
-            } catch (e: InterruptedException) {
-                // do nothing
-            }
-
-        }
-
-        surfaceReady = true
-
-//        startDrawThread()
-
         screenHeight = height
         screenWidth = width
-
         drawOnCanvas()
 
-    }
-
-    fun startDrawThread() {
-        if (surfaceReady && drawThread == null) {
-            // Create the child drawThread when SurfaceView is created.
-            drawThread = Thread(this)
-            // Start to run the child drawThread.
-            drawThread!!.start()
-            // Set drawThread running flag to true.
-            drawingActive = true
-        }
     }
 
     fun drawOnCanvas(dirtyRect: Rect = Rect(0, 0, right, bottom)) {

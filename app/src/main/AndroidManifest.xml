@@ -3,19 +3,27 @@
     package="com.show.singlecanvas">
 
     <application
+        android:name=".SingleCanvasApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".listactivity.GifRenderingActivity" />
+        <activity android:name=".listactivity.SurfaceViewThreadActivity" />
+        <activity android:name=".listactivity.SurfaceViewActivity" />
+        <activity android:name=".listactivity.SingleViewCanvasActivity" />
+        <activity android:name=".listactivity.MultipleViewActivity" />
+        <activity android:name=".ListingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".listactivity.SurfaceViewRecyclerActivity" />
     </application>
 
 </manifest>

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SingleCanvas</string>
+    <string name="number_of_item">Number of Item\'s</string>
+    <string name="set_no_of_objects">Set Number Of Objects</string>
 </resources>
