@@ -3,11 +3,11 @@ package com.show.singlecanvas
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.text.InputType
 import android.view.Gravity
 import android.view.Menu
@@ -28,7 +28,12 @@ class ListingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_listing)
         val listingRecyclerView = listingRecyclerView as RecyclerView
         val listingAdapter = ListingAdapter(applicationContext, getMapOfContent())
-        listingRecyclerView.addItemDecoration(DividerItemDecoration(this@ListingActivity, LinearLayoutManager.VERTICAL))
+        listingRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                this@ListingActivity,
+                LinearLayoutManager.VERTICAL
+            )
+        )
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         listingRecyclerView.layoutManager = linearLayoutManager

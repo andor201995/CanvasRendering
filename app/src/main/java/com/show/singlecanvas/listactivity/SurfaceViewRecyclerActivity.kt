@@ -1,10 +1,10 @@
 package com.show.singlecanvas.listactivity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.show.singlecanvas.R
 import com.show.singlecanvas.SingleCanvasApplication
 import com.show.singlecanvas.adapter.ThumbnailAdapter
@@ -17,16 +17,16 @@ class SurfaceViewRecyclerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_surface_view_recycler)
-        val thumbnailRecyclerView = thumbnail as RecyclerView
+        val thumbnailRecyclerView = thumbnail as androidx.recyclerview.widget.RecyclerView
         val thumbnailAdapter = ThumbnailAdapter(applicationContext)
         thumbnailRecyclerView.addItemDecoration(
-            DividerItemDecoration(
+            androidx.recyclerview.widget.DividerItemDecoration(
                 this@SurfaceViewRecyclerActivity,
-                LinearLayoutManager.HORIZONTAL
+                androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
             )
         )
-        val linearLayoutManager = LinearLayoutManager(this)
-        linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
+        val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        linearLayoutManager.orientation = androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
         thumbnailRecyclerView.layoutManager = linearLayoutManager
         thumbnailRecyclerView.adapter = thumbnailAdapter
     }

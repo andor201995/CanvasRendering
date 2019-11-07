@@ -1,7 +1,7 @@
 package com.show.singlecanvas.listactivity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.show.singlecanvas.R
 
 class GifRenderingActivity : AppCompatActivity() {
