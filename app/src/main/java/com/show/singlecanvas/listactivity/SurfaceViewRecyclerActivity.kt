@@ -17,16 +17,18 @@ class SurfaceViewRecyclerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_surface_view_recycler)
-        val thumbnailRecyclerView = thumbnail as androidx.recyclerview.widget.RecyclerView
+        val thumbnailRecyclerView = thumbnail as RecyclerView
         val thumbnailAdapter = ThumbnailAdapter(applicationContext)
+        thumbnailAdapter.numOfObjectsForThumbnail =
+            (application as SingleCanvasApplication).getNumberOfObject()
         thumbnailRecyclerView.addItemDecoration(
-            androidx.recyclerview.widget.DividerItemDecoration(
+            DividerItemDecoration(
                 this@SurfaceViewRecyclerActivity,
-                androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
+                LinearLayoutManager.HORIZONTAL
             )
         )
-        val linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
-        linearLayoutManager.orientation = androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL
+        val linearLayoutManager = LinearLayoutManager(this)
+        linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         thumbnailRecyclerView.layoutManager = linearLayoutManager
         thumbnailRecyclerView.adapter = thumbnailAdapter
     }
@@ -36,13 +38,4 @@ class SurfaceViewRecyclerActivity : AppCompatActivity() {
         slideViewSurfaceRecycler.setNumOfObjects((application as SingleCanvasApplication).getNumberOfObject())
     }
 
-    override fun onResume() {
-        super.onResume()
-//        slideViewSurfaceRecycler.startSurfaceDrawThread()
-    }
-
-    override fun onPause() {
-        super.onPause()
-//        slideViewSurfaceRecycler.stopSurfaceDrawThread()
-    }
 }

@@ -3,11 +3,6 @@ package com.show.singlecanvas
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.text.InputType
 import android.view.Gravity
 import android.view.Menu
@@ -15,6 +10,11 @@ import android.view.MenuItem
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.show.singlecanvas.adapter.ListingAdapter
 import com.show.singlecanvas.listactivity.*
 import com.show.singlecanvas.model.ListModel
@@ -27,7 +27,7 @@ class ListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listing)
         val listingRecyclerView = listingRecyclerView as RecyclerView
-        val listingAdapter = ListingAdapter(applicationContext, getMapOfContent())
+        val listingAdapter = ListingAdapter(this, getMapOfContent())
         listingRecyclerView.addItemDecoration(
             DividerItemDecoration(
                 this@ListingActivity,
@@ -49,7 +49,8 @@ class ListingActivity : AppCompatActivity() {
             2 to ListModel("Surface View", SurfaceViewActivity::class.java),
             3 to ListModel("Surface View Thread", SurfaceViewThreadActivity::class.java),
             4 to ListModel("Recycler View Thumbnail", SurfaceViewRecyclerActivity::class.java),
-            5 to ListModel("Rendering Gif on Surface View", GifRenderingActivity::class.java)
+            5 to ListModel("Rendering Gif on Surface View", GifRenderingActivity::class.java),
+            6 to ListModel("Rendering MultipleView on ViewPager", ViewPager2Activity::class.java)
         )
     }
 

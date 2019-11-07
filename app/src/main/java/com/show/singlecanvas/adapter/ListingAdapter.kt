@@ -2,11 +2,11 @@ package com.show.singlecanvas.adapter
 
 import android.content.Context
 import android.content.Intent
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.show.singlecanvas.R
 import com.show.singlecanvas.model.ListModel
 
@@ -15,7 +15,7 @@ class ListingAdapter(
     private val context: Context,
     private val contentList: HashMap<Int, ListModel>
 
-) : androidx.recyclerview.widget.RecyclerView.Adapter<ListingAdapter.ListingHolder>() {
+) : RecyclerView.Adapter<ListingAdapter.ListingHolder>() {
 
     override fun getItemCount(): Int {
         return contentList.size
@@ -40,7 +40,7 @@ class ListingAdapter(
         return position
     }
 
-    inner class ListingHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view), View.OnClickListener {
+    inner class ListingHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
         override fun onClick(v: View?) {
             val listModel = contentList[adapterPosition]
