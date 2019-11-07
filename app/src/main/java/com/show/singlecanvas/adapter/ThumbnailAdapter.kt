@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.show.singlecanvas.R
-import com.show.singlecanvas.customview.SlideView.SlideViewSurface
+import com.show.singlecanvas.customview.slideView.SlideViewSurface
 
 
 class ThumbnailAdapter(

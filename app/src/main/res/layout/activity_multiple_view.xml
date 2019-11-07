@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".listactivity.MultipleViewActivity">
 
-    <com.show.singlecanvas.customview.SlideView.SlideViewMultipleCanvas
+    <com.show.singlecanvas.customview.slideView.SlideViewMultipleCanvas
         android:id="@+id/slideViewMultipleCanvas"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

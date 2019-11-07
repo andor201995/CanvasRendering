@@ -1,7 +1,9 @@
 package com.show.singlecanvas.listactivity
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager2.widget.ViewPager2
 import com.show.singlecanvas.R
 import com.show.singlecanvas.SingleCanvasApplication
 import com.show.singlecanvas.adapter.ViewPageAdapter
@@ -17,6 +19,14 @@ class ViewPager2Activity : AppCompatActivity() {
             (application as SingleCanvasApplication).getNumberOfObject()
 
         view_pager2.adapter = viewPageAdapter
+
+        view_pager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                Toast.makeText(applicationContext, "Page Selected: $position", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        })
 
     }
 }

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".listactivity.SurfaceViewThreadActivity">
 
-    <com.show.singlecanvas.customview.SlideView.SlideViewSurfaceThread
+    <com.show.singlecanvas.customview.slideView.SlideViewSurfaceThread
         android:id="@+id/slideViewSurfaceThread"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

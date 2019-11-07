@@ -16,6 +16,8 @@ import java.util.*
  * Created by anmol-5732 on 05/01/18.
  */
 class ShapeView(context: Context) : FrameLayout(context) {
+
+
     companion object {
         private val INVALID_POINTER_ID: Int = -1
     }
@@ -135,4 +137,5 @@ class ShapeView(context: Context) : FrameLayout(context) {
         }
         return true
     }
+
 }
