@@ -1,10 +1,10 @@
 package com.show.singlecanvas.listactivity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.show.singlecanvas.R
 import com.show.singlecanvas.SingleCanvasApplication
 import com.show.singlecanvas.adapter.ThumbnailAdapter
@@ -19,6 +19,8 @@ class SurfaceViewRecyclerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_surface_view_recycler)
         val thumbnailRecyclerView = thumbnail as RecyclerView
         val thumbnailAdapter = ThumbnailAdapter(applicationContext)
+        thumbnailAdapter.numOfObjectsForThumbnail =
+            (application as SingleCanvasApplication).getNumberOfObject()
         thumbnailRecyclerView.addItemDecoration(
             DividerItemDecoration(
                 this@SurfaceViewRecyclerActivity,
@@ -36,13 +38,4 @@ class SurfaceViewRecyclerActivity : AppCompatActivity() {
         slideViewSurfaceRecycler.setNumOfObjects((application as SingleCanvasApplication).getNumberOfObject())
     }
 
-    override fun onResume() {
-        super.onResume()
-//        slideViewSurfaceRecycler.startSurfaceDrawThread()
-    }
-
-    override fun onPause() {
-        super.onPause()
-//        slideViewSurfaceRecycler.stopSurfaceDrawThread()
-    }
 }

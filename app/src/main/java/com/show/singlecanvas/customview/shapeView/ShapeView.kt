@@ -16,6 +16,8 @@ import java.util.*
  * Created by anmol-5732 on 05/01/18.
  */
 class ShapeView(context: Context) : FrameLayout(context) {
+
+
     companion object {
         private val INVALID_POINTER_ID: Int = -1
     }
@@ -34,14 +36,46 @@ class ShapeView(context: Context) : FrameLayout(context) {
         val rand = Random()
 
         val randDim = floatArrayOf(
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50f, context.resources.displayMetrics),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60f, context.resources.displayMetrics),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70f, context.resources.displayMetrics),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80f, context.resources.displayMetrics),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 90f, context.resources.displayMetrics),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, context.resources.displayMetrics),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 110f, context.resources.displayMetrics),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120f, context.resources.displayMetrics)
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                50f,
+                context.resources.displayMetrics
+            ),
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                60f,
+                context.resources.displayMetrics
+            ),
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                70f,
+                context.resources.displayMetrics
+            ),
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                80f,
+                context.resources.displayMetrics
+            ),
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                90f,
+                context.resources.displayMetrics
+            ),
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                100f,
+                context.resources.displayMetrics
+            ),
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                110f,
+                context.resources.displayMetrics
+            ),
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                120f,
+                context.resources.displayMetrics
+            )
         )
 
         val randColor = intArrayOf(
@@ -75,6 +109,7 @@ class ShapeView(context: Context) : FrameLayout(context) {
                 initX = event.x
                 initY = event.y
                 activePointerID = event.getPointerId(0)
+                parent.requestDisallowInterceptTouchEvent(true)
             }
             MotionEvent.ACTION_MOVE -> {
                 val pointerIndex: Int = event.findPointerIndex(activePointerID)
@@ -95,10 +130,12 @@ class ShapeView(context: Context) : FrameLayout(context) {
             MotionEvent.ACTION_UP -> {
                 paint.color = Color.GREEN
                 activePointerID = INVALID_POINTER_ID
+                parent.requestDisallowInterceptTouchEvent(false)
             }
             MotionEvent.ACTION_CANCEL -> activePointerID = INVALID_POINTER_ID
 
         }
         return true
     }
+
 }

@@ -1,18 +1,19 @@
 package com.show.singlecanvas.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.show.singlecanvas.R
-import com.show.singlecanvas.customview.SlideView.SlideViewSurfaceThread
+import com.show.singlecanvas.customview.slideView.SlideViewSurface
 
 
 class ThumbnailAdapter(
     private val context: Context
-) : RecyclerView.Adapter<ThumbnailAdapter.ThumbnailHolder>() {
+) : androidx.recyclerview.widget.RecyclerView.Adapter<ThumbnailAdapter.ThumbnailHolder>() {
+
+    var numOfObjectsForThumbnail: Int = 1000
 
     override fun getItemCount(): Int {
         return 100
@@ -26,6 +27,7 @@ class ThumbnailAdapter(
 
     override fun onBindViewHolder(holder: ThumbnailHolder, position: Int) {
         holder.txtView.text = "Slide: $position"
+        holder.surfaseView.setNumOfObjects(numOfObjectsForThumbnail)
 //        holder.slideView.startSurfaceDrawThread()
     }
 
@@ -37,13 +39,10 @@ class ThumbnailAdapter(
         return position
     }
 
-    override fun onViewDetachedFromWindow(holder: ThumbnailHolder) {
-//        holder.slideView.stopSurfaceDrawThread()
-        super.onViewDetachedFromWindow(holder)
-    }
-
-    inner class ThumbnailHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ThumbnailHolder(view: View) :
+        androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
         var txtView: TextView = view.findViewById(R.id.itemTextView)
+        val surfaseView = view.findViewById<SlideViewSurface>(R.id.itemSlideView)
 //        var slideView: SlideViewSurfaceThread = view.findViewById(R.id.itemSlideView)
     }
 }

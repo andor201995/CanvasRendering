@@ -1,7 +1,7 @@
 package com.show.singlecanvas.listactivity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.show.singlecanvas.R
 import com.show.singlecanvas.SingleCanvasApplication
 import kotlinx.android.synthetic.main.activity_surface_view_thread.*
