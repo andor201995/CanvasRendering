@@ -16,11 +16,11 @@ import kotlinx.coroutines.launch
 class ViewPageAdapter(val context: Context) :
     RecyclerView.Adapter<ViewPageAdapter.ViewPageHolder>() {
 
-    var numOfItemsInViewPage = 1000
-
-    private var job = Job()
-    private val scopeMainThread = CoroutineScope(job + Dispatchers.Main)
+    private val job = Job()
+    private val scopeMain = CoroutineScope(job + Dispatchers.Main)
     private val scopeIO = CoroutineScope(job + Dispatchers.IO)
+
+    var numOfItemsInViewPage = 1000
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPageHolder {
         val itemView =
@@ -40,7 +40,7 @@ class ViewPageAdapter(val context: Context) :
         scopeIO.launch {
             val slideViewMultipleCanvas = SlideViewMultipleCanvas(context)
             slideViewMultipleCanvas.setNumOfObjects(numOfItemsInViewPage)
-            scopeMainThread.launch {
+            scopeMain.launch {
                 holder.slideViewItemHolder.addView(slideViewMultipleCanvas)
             }
         }
