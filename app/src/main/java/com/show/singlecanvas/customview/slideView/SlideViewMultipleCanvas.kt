@@ -2,6 +2,7 @@ package com.show.singlecanvas.customview.slideView
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.widget.FrameLayout
 import com.show.singlecanvas.customview.shapeView.ShapeView
@@ -36,15 +37,6 @@ class SlideViewMultipleCanvas : FrameLayout {
             context.resources.displayMetrics
         )
 
-
-    init {
-        post {
-            scopeIO.launch {
-                setUpView()
-            }
-        }
-    }
-
     private fun setUpView() {
         slideLeftTop = floatArrayOf((width - slideWidth) / 2, (height - slideHeight) / 2)
 
@@ -69,8 +61,6 @@ class SlideViewMultipleCanvas : FrameLayout {
         }
 
         addViewInScope(listOfObject)
-
-
     }
 
     private fun addViewInScope(listOfObject: ArrayList<ShapeView>) {
@@ -83,6 +73,12 @@ class SlideViewMultipleCanvas : FrameLayout {
 
     fun setNumOfObjects(numberOfObjects: Int) {
         numberOfShapes = numberOfObjects
+        post {
+            scopeIO.launch {
+                Log.i("SlideViewMultipleCanvas", "Setting Up View: ${Thread.currentThread().name}")
+                setUpView()
+            }
+        }
     }
 
 }
