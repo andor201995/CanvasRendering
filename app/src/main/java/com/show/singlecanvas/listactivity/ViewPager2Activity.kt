@@ -19,12 +19,16 @@ class ViewPager2Activity : AppCompatActivity() {
             (application as SingleCanvasApplication).getNumberOfObject()
 
         view_pager2.adapter = viewPageAdapter
-
         view_pager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 Toast.makeText(applicationContext, "Page Selected: $position", Toast.LENGTH_SHORT)
                     .show()
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+                viewPageAdapter.setScrollType(ViewPageAdapter.RenderState.Rendering.StartRendering)
             }
         })
 

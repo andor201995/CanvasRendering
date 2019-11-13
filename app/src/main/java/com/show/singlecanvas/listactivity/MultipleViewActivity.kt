@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.show.singlecanvas.R
 import com.show.singlecanvas.SingleCanvasApplication
 import kotlinx.android.synthetic.main.activity_multiple_view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MultipleViewActivity : AppCompatActivity() {
 
@@ -16,6 +18,9 @@ class MultipleViewActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val singleCanvasApplication = application as SingleCanvasApplication
-        slideViewMultipleCanvas.setNumOfObjects(singleCanvasApplication.getNumberOfObject())
+        GlobalScope.launch {
+            slideViewMultipleCanvas.setNumOfObjects(singleCanvasApplication.getNumberOfObject())
+            slideViewMultipleCanvas.startJob()
+        }
     }
 }

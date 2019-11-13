@@ -5,9 +5,10 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.FrameLayout
 import com.show.singlecanvas.customview.shapeView.ShapeView
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -15,7 +16,7 @@ class SlideViewMultipleCanvas : FrameLayout {
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
     constructor(context: Context) : super(context)
 
-    private var numberOfShapes = 0
+    private val listOfObject = ArrayList<WeakReference<ShapeView>>()
     private lateinit var slideLeftTop: FloatArray
     private val slideWidth =
         TypedValue.applyDimension(
@@ -30,8 +31,8 @@ class SlideViewMultipleCanvas : FrameLayout {
             context.resources.displayMetrics
         )
 
-    private suspend fun setUpView(iODispatcher: CoroutineDispatcher) {
-        withContext(iODispatcher) {
+    private suspend fun setUpView() {
+        withContext(Dispatchers.Default) {
             slideLeftTop =
                 floatArrayOf(slideWidth / 2, slideHeight / 2)
 
@@ -44,36 +45,44 @@ class SlideViewMultipleCanvas : FrameLayout {
                 -90f, 90f,
                 -100f, 100f
             )
-            val listOfObject = ArrayList<ShapeView>()
 
-            for (i in 0 until numberOfShapes) {
-                val shapeView = ShapeView(context)
-                val randLeft = randLeftTop[rand.nextInt(12)]
-                val randTop = randLeftTop[rand.nextInt(12)]
-                shapeView.translationX = slideLeftTop[0] + randLeft
-                shapeView.translationY = slideLeftTop[1] + randTop
-                listOfObject.add(shapeView)
-            }
-            addViewInScope(listOfObject, Dispatchers.Main)
-        }
-    }
+            val isSettingShape = async(Dispatchers.Default) { setShapeView(randLeftTop, rand) }
+            val isAddingShape = async(Dispatchers.Main) { addViewInScope() }
 
-    private suspend fun addViewInScope(
-        listOfObject: ArrayList<ShapeView>,
-        dispatcher: CoroutineDispatcher
-    ) {
-        withContext(dispatcher) {
-            for (shapeView in listOfObject) {
-                addView(shapeView)
+            if (isAddingShape.await() && isSettingShape.await()) {
+                listOfObject.clear()
             }
         }
     }
 
-    fun setNumOfObjects(numberOfObjects: Int) {
-        numberOfShapes = numberOfObjects
+    private fun setShapeView(randLeftTop: FloatArray, rand: Random): Boolean {
+        for (shapeView in listOfObject) {
+            val randLeft = randLeftTop[rand.nextInt(12)]
+            val randTop = randLeftTop[rand.nextInt(12)]
+            shapeView.get()?.translationX = slideLeftTop[0] + randLeft
+            shapeView.get()?.translationY = slideLeftTop[1] + randTop
+        }
+        return true
     }
 
-    suspend fun startJob(dispatcher: CoroutineDispatcher) {
-        setUpView(dispatcher)
+    private fun addViewInScope(): Boolean {
+        for (shapeView in listOfObject) {
+            shapeView.get()?.let {
+                addView(it)
+            }
+        }
+        return true
+    }
+
+    suspend fun setNumOfObjects(numberOfObjects: Int) {
+        withContext(Dispatchers.Default) {
+            for (i in 0 until numberOfObjects) {
+                listOfObject.add(WeakReference(ShapeView(context)))
+            }
+        }
+    }
+
+    suspend fun startJob() {
+        setUpView()
     }
 }
