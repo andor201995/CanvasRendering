@@ -12,15 +12,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class ViewPageAdapter(val context: Context) :
-    RecyclerView.Adapter<ViewPageAdapter.ViewPageHolder>() {
-
+    RecyclerView.Adapter<ViewPageAdapter.ViewPageHolder>(), CoroutineScope {
     private val job = Job()
-    private val scopeMain = CoroutineScope(job + Dispatchers.Main)
-    private val scopeIO = CoroutineScope(job + Dispatchers.IO)
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
 
     var numOfItemsInViewPage = 1000
+
+    private var renderState: RenderState = RenderState.Rendering.StartRendering
+
+    private val map = HashMap<Int, Job>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPageHolder {
         val itemView =
@@ -36,18 +42,61 @@ class ViewPageAdapter(val context: Context) :
         return position.toLong()
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
     override fun onBindViewHolder(holder: ViewPageHolder, position: Int) {
-        scopeIO.launch {
-            val slideViewMultipleCanvas = SlideViewMultipleCanvas(context)
+        val slideViewMultipleCanvas = SlideViewMultipleCanvas(context)
+        holder.slideViewItemHolder.addView(slideViewMultipleCanvas)
+        holder.positionHolder = position
+//        if (renderState is RenderState.Rendering) {
+        val childJob = launch {
             slideViewMultipleCanvas.setNumOfObjects(numOfItemsInViewPage)
-            scopeMain.launch {
-                holder.slideViewItemHolder.addView(slideViewMultipleCanvas)
-            }
+            slideViewMultipleCanvas.startJob()
         }
+        map[position] = childJob
+//        }
+    }
+
+    override fun onViewRecycled(holder: ViewPageHolder) {
+        val childJob = map[holder.positionHolder]
+        if (childJob is Job && childJob.isActive) {
+            childJob.cancel()
+            map.remove(holder.positionHolder)
+        }
+        super.onViewRecycled(holder)
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        job.cancel()
+    }
+
+    fun setScrollType(
+        renderState: RenderState
+    ) {
+        this.renderState = renderState
+//        if (renderState is RenderState.Rendering.NotifyRendering) {
+//            for (pos in renderState.fromPosition until renderState.toPosition + 1) {
+//                notifyItemChanged(pos)
+//            }
+//        }
     }
 
     inner class ViewPageHolder(view: View) : RecyclerView.ViewHolder(view) {
         val slideViewItemHolder: FrameLayout =
             view.findViewById(R.id.itemSlideViewMultipleCanvasHolder)
+        var positionHolder: Int = -1
     }
+
+    sealed class RenderState {
+        sealed class Rendering : RenderState() {
+            object StartRendering : Rendering()
+            data class NotifyRendering(val fromPosition: Int, val toPosition: Int) : Rendering()
+        }
+
+        object CancelRendering : RenderState()
+    }
+
 }

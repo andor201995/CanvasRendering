@@ -10,6 +10,11 @@ class SingleCanvasApplication : Application() {
         numberOfObjects = 1000
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        System.setProperty("kotlinx.coroutines.debug", if (BuildConfig.DEBUG) "on" else "off")
+    }
+
     fun getNumberOfObject(): Int {
         return numberOfObjects
     }
