@@ -9,6 +9,8 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
+import com.show.singlecanvas.customview.MyEditText
 import java.util.*
 
 
@@ -95,6 +97,9 @@ class ShapeView(context: Context) : FrameLayout(context) {
         path.addRect(0f, 0f, randWidth, randHeight, Path.Direction.CW)
         setBackgroundColor(paint.color)
         layoutParams = ViewGroup.LayoutParams(randWidth.toInt(), randHeight.toInt())
+        val text = MyEditText(context)
+        text.setText("Hello WassUP?", TextView.BufferType.NORMAL)
+        addView(text)
     }
 
     override fun onDraw(canvas: Canvas?) {
